@@ -8,6 +8,23 @@ Copy/paste material for the submission form, plus a shot-by-shot demo script.
 
 Governed AI creative: generate ad campaigns that can prove where they came from.
 
+## Links
+
+- **Live app:** https://hallmark-64ts.onrender.com
+- **Repo:** https://github.com/23f2001033/b2genblaze
+
+## Built with (25 tags)
+
+```
+genblaze, backblaze-b2, nvidia-nim, featherless-ai, elevenlabs, deepseek,
+flux, python, fastapi, react, docker, ffmpeg, vite, boto3, s3, uvicorn,
+pillow, javascript, server-sent-events, render, object-lock, provenance,
+eu-ai-act, generative-ai, sha-256
+```
+
+The two that matter most for judging are `genblaze` and `backblaze-b2` — the
+sponsor technologies scored directly by the criteria.
+
 ---
 
 ## Inspiration
