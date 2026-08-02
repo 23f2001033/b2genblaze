@@ -90,6 +90,16 @@ nav.tabs button.on { color: var(--gold); background: var(--panel); border-color:
 .grid2 { display: grid; grid-template-columns: 1.05fr 1fr; gap: 20px; align-items: start; }
 @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
 
+/* The brief form is much taller than the pipeline panel, which otherwise
+   leaves a large empty column while scrolling. Pin the right column so the
+   live event stream stays in view during the ~90s run. */
+.sticky-col {
+  position: sticky; top: 74px;
+  max-height: calc(100vh - 96px); overflow-y: auto;
+  scrollbar-width: thin;
+}
+@media (max-width: 900px) { .sticky-col { position: static; max-height: none; overflow: visible; } }
+
 h2.sec { font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em;
   color: var(--dim); margin: 0 0 14px; font-weight: 620; }
 

@@ -181,7 +181,7 @@ export default function Studio({ onDone }) {
       </div>
 
       {/* ---------------- live + results ---------------- */}
-      <div className="stack">
+      <div className="stack sticky-col">
         <div className="panel">
           <h2 className="sec">Pipeline</h2>
           <div className="stages">
