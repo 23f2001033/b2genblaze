@@ -56,6 +56,11 @@ class Settings:
 
     # --- behavior ---
     demo_mode: bool = _flag("DEMO_MODE", False)
+    # Free-tier hosts give ~0.1 vCPU, where a 1080p x264 encode is painfully
+    # slow. LOW_RESOURCE shrinks the composed video and uses the fastest
+    # preset; set it on constrained deploys, leave it off locally.
+    low_resource: bool = _flag("LOW_RESOURCE", False)
+    video_seconds_per_scene: float = float(os.environ.get("VIDEO_SECONDS_PER_SCENE", "4"))
     max_judge_iterations: int = int(os.environ.get("MAX_JUDGE_ITERATIONS", "3"))
     judge_pass_score: float = float(os.environ.get("JUDGE_PASS_SCORE", "0.75"))
     step_timeout: int = int(os.environ.get("STEP_TIMEOUT", "240"))

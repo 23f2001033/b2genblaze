@@ -149,6 +149,8 @@ def run_campaign(req: CampaignRequest, emit: Emit | None = None) -> RunOut:
                 video_path = compose_video(
                     approved_stills, voice_tracks, work / f"{run_id}-ad.mp4",
                     fmt=req.formats[0],
+                    seconds_per_scene=s.video_seconds_per_scene,
+                    low_resource=s.low_resource,
                 )
             except Exception as exc:  # noqa: BLE001
                 emit("video.failed", error=f"{type(exc).__name__}: {exc}")

@@ -180,6 +180,21 @@ a cent on generation.
 
 ---
 
+## Deploy
+
+The repo ships a `render.yaml` blueprint and a self-contained `Dockerfile`
+(ffmpeg + fonts included, SPA built in a Node stage, served same-origin by FastAPI).
+
+**Render** — *New → Blueprint* → point at this repo. The blueprint sets the tuning
+variables and prompts for the seven secrets. `LOW_RESOURCE=1` halves the composed
+video's dimensions and switches ffmpeg to `ultrafast`, because free instances get
+~0.1 vCPU where a 1080p x264 encode is not viable.
+
+Any Docker host works — the image honours `$PORT` and needs no volumes; B2 holds all state.
+
+> Hugging Face Spaces was the original target, but Docker Spaces now require a PRO
+> subscription (only static Spaces are free), so the blueprint targets Render instead.
+
 ## Production notes
 
 - **Degrades instead of failing.** A vision-judge outage accepts the image rather than burning

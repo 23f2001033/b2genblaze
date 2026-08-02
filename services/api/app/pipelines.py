@@ -780,6 +780,7 @@ def compose_video(
     *,
     seconds_per_scene: float = 4.0,
     fmt: str = "1:1",
+    low_resource: bool = False,
 ) -> Path | None:
     """Ken Burns over the approved stills, muxed with voiceover when present.
 
@@ -792,23 +793,31 @@ def compose_video(
 
     tmp = Path(tempfile.mkdtemp(prefix="hallmark-vid-"))
     clips: list[Path] = []
-    fps = 30
+    fps = 24 if low_resource else 30
     frames = int(seconds_per_scene * fps)
     width, height = VIDEO_DIMS.get(fmt, VIDEO_DIMS["1:1"])
+    if low_resource:
+        # Halve the long edge — 0.1 vCPU cannot encode 1080p in reasonable time.
+        width, height = width // 2 // 2 * 2, height // 2 // 2 * 2
+    preset = "ultrafast" if low_resource else "veryfast"
+    # Supersampling before zoompan is what makes the pan smooth; on a tiny CPU
+    # the 2x buffer is the single most expensive part, so drop it to 1.5x.
+    ss = 15 if low_resource else 20
 
     for i, still in enumerate(stills):
         clip = tmp / f"clip{i}.mp4"
         # zoompan defaults to 1280x720 output unless s= is given, which would
         # break any downstream crop — always pin s= to the target size.
+        bw, bh = width * ss // 10 // 2 * 2, height * ss // 10 // 2 * 2
         vf = (
-            f"scale={width*2}:{height*2}:force_original_aspect_ratio=increase,"
-            f"crop={width*2}:{height*2},"
+            f"scale={bw}:{bh}:force_original_aspect_ratio=increase,"
+            f"crop={bw}:{bh},"
             f"zoompan=z='min(zoom+0.0012,1.15)':d={frames}"
             f":x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={width}x{height}:fps={fps},"
             f"format=yuv420p"
         )
         cmd = [ff, "-y", "-loop", "1", "-i", str(still), "-vf", vf,
-               "-t", str(seconds_per_scene), "-c:v", "libx264", "-preset", "veryfast",
+               "-t", str(seconds_per_scene), "-c:v", "libx264", "-preset", preset,
                "-pix_fmt", "yuv420p", str(clip)]
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=240)
         if proc.returncode == 0:

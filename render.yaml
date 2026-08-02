@@ -1,0 +1,49 @@
+# Render blueprint — deploy with New > Blueprint, pointed at this repo.
+# Secrets are marked sync:false so Render prompts for them instead of
+# storing them in git.
+services:
+  - type: web
+    name: hallmark
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      # --- tuning for the free instance (0.1 vCPU / 512 MB) ---
+      - key: LOW_RESOURCE
+        value: "1"
+      - key: VIDEO_SECONDS_PER_SCENE
+        value: "3"
+      - key: MAX_JUDGE_ITERATIONS
+        value: "2"
+
+      # --- model selection ---
+      - key: FEATHERLESS_MODEL
+        value: deepseek-ai/DeepSeek-V3.2
+      - key: IMAGE_MODEL
+        value: black-forest-labs/flux.1-dev
+      - key: VISION_MODEL
+        value: nvidia/nemotron-nano-12b-v2-vl
+      - key: TTS_MODEL
+        value: eleven_flash_v2_5
+      - key: ATTEST_RETENTION_DAYS
+        value: "365"
+
+      # --- secrets: entered in the Render dashboard, never committed ---
+      - key: B2_KEY_ID
+        sync: false
+      - key: B2_APP_KEY
+        sync: false
+      - key: B2_BUCKET
+        sync: false
+      - key: B2_REGION
+        sync: false
+      - key: FEATHERLESS_API_KEY
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
