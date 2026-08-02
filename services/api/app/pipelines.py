@@ -23,6 +23,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import logging
 import re
 import subprocess
 import shutil
@@ -53,6 +54,8 @@ from genblaze_s3 import S3StorageBackend
 
 from .config import Settings, get_settings
 from .models import BrandKit, CampaignSpec, Scene, Verdict
+
+logger = logging.getLogger("hallmark.pipelines")
 
 Emit = Callable[..., None]
 
@@ -473,14 +476,34 @@ Return ONLY:
             ],
         }
     ]
-    resp = nchat(s.vision_model, messages=messages, max_tokens=600, temperature=0.2)
-    d = parse_json_loose(resp.text or "")
-    return Verdict(
-        passed=bool(d.get("passed", False)),
-        score=float(d.get("score", 0.0) or 0.0),
-        brand_issues=[str(x) for x in d.get("brand_issues", [])],
-        feedback=str(d.get("feedback", "")),
-    )
+
+    # Cross-provider fallback: NVIDIA NIM first, Google Gemini second.
+    # genblaze's own `fallback_models=` only retries slugs within one provider,
+    # so provider-level failover is ours to own.
+    attempts: list[tuple[str, Any]] = [("nvidia", lambda: nchat(
+        s.vision_model, messages=messages, max_tokens=600, temperature=0.2))]
+    if s.has_gemini:
+        from genblaze_google import chat as gchat
+
+        attempts.append(("google", lambda: gchat(
+            s.gemini_model, messages=messages, max_tokens=600)))
+
+    last: Exception | None = None
+    for provider_name, call in attempts:
+        try:
+            resp = call()
+            d = parse_json_loose(resp.text or "")
+            return Verdict(
+                passed=bool(d.get("passed", False)),
+                score=float(d.get("score", 0.0) or 0.0),
+                brand_issues=[str(x) for x in d.get("brand_issues", [])],
+                feedback=str(d.get("feedback", "")),
+            )
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            logger.warning("vision judge via %s failed: %s", provider_name, exc)
+
+    raise last or RuntimeError("no vision judge available")
 
 
 # ==========================================================================
