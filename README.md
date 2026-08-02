@@ -12,6 +12,12 @@ short_description: Governed AI creative with verifiable provenance on Backblaze 
 
 # Hallmark — governed AI creative
 
+### ▶ Live app: **https://hallmark-64ts.onrender.com**
+
+> Free instance — it sleeps after ~15 min idle, so the first request may take ~50s to wake.
+> Nothing is lost when it sleeps: all state lives in Backblaze B2.
+> Try the **Verify** tab first — drop in any PNG or MP4 from the Library.
+
 **Generate AI ad creative that can prove where it came from.**
 
 Hallmark plans a campaign, generates the imagery, judges its own output against your brand
