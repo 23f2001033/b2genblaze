@@ -1,0 +1,14 @@
+# --- Genblaze SDK + connectors ---
+genblaze==0.4.5
+genblaze-nvidia==0.3.3
+genblaze-openai==0.3.4
+genblaze-google==0.3.4
+genblaze-elevenlabs
+genblaze-cli==0.3.6
+
+# --- web ---
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+python-multipart==0.0.32
+python-dotenv==1.2.2
+httpx==0.28.1

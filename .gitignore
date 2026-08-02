@@ -1,0 +1,38 @@
+# --- secrets: never commit ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- node ---
+node_modules/
+dist/
+build/
+.vite/
+
+# --- app artifacts ---
+output/
+data/
+tmp/
+*.mp4
+*.wav
+*.mp3
+*.png
+!docs/**/*.png
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
